@@ -17,14 +17,11 @@ package com.holmbech;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.RollingFileAppender;
+import org.apache.log4j.helpers.CyclicBuffer;
 import org.apache.log4j.spi.LoggingEvent;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class PositronAppender extends RollingFileAppender {
-    private List<LoggingEvent> buffer = new ArrayList<LoggingEvent>(100);
+    private CyclicBuffer buffer = new CyclicBuffer(100);
     private int bufferSize = 100;
     private Level levelToLogBuffer = Level.ERROR;
     private Level minimumLevelToAdd = Level.DEBUG;
@@ -34,15 +31,15 @@ public class PositronAppender extends RollingFileAppender {
         if (event.getLevel().isGreaterOrEqual(levelToLogBuffer)) {
             buffer.add(event);
             writeBufferedEvents();
-            buffer = new ArrayList<LoggingEvent>(bufferSize);
+            buffer = new CyclicBuffer(bufferSize);
         } else if (event.getLevel().isGreaterOrEqual(minimumLevelToAdd)) {
             buffer.add(event);
         }
     }
 
     private void writeBufferedEvents() {
-        for (LoggingEvent loggingEvent : buffer) {
-            super.append(loggingEvent);
+        for (int i = 0; i < buffer.length(); i++) {
+            super.append(buffer.get(i));
         }
     }
 
@@ -67,10 +64,10 @@ public class PositronAppender extends RollingFileAppender {
 
     public void setBufferSize(int bufferSize) {
         this.bufferSize = bufferSize;
-        buffer = new ArrayList<LoggingEvent>(bufferSize);
+        buffer.resize(bufferSize);
     }
 
-    List getBuffer() {
-        return Collections.unmodifiableList(buffer);
+    CyclicBuffer getBuffer() {
+        return buffer;
     }
 }

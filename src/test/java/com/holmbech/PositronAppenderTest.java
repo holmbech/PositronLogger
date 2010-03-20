@@ -19,8 +19,7 @@ import junit.framework.TestCase;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-
-import java.util.List;
+import org.apache.log4j.helpers.CyclicBuffer;
 
 public class PositronAppenderTest extends TestCase {
     private final String logFileName = "test.log";
@@ -29,13 +28,13 @@ public class PositronAppenderTest extends TestCase {
     public void testSimple() {
         final PositronAppender positronAppender = getPositronAppender();
         root.addAppender(positronAppender);
-        final List buffer = positronAppender.getBuffer();
+        final CyclicBuffer buffer = positronAppender.getBuffer();
         root.warn("x");
-        assertEquals(1, buffer.size());
+        assertEquals(1, buffer.length());
         root.warn("y");
-        assertEquals(2, buffer.size());
+        assertEquals(2, buffer.length());
         root.error("ERROR OCCURED");
-        assertEquals(0, positronAppender.getBuffer().size());
+        assertEquals(0, positronAppender.getBuffer().length());
     }
 
     public void testMinimumLevelToAdd() {
@@ -45,12 +44,11 @@ public class PositronAppenderTest extends TestCase {
         positronAppender.activateOptions();
         root.addAppender(positronAppender);
         root.debug("x 1");
-        final List buffer = positronAppender.getBuffer();
-        assertEquals(0, buffer.size());
+        assertEquals(0, positronAppender.getBuffer().length());
         root.warn("x 1");
-        assertEquals(1, buffer.size());
+        assertEquals(1, positronAppender.getBuffer().length());
         root.error("x 1");
-        assertEquals(0, positronAppender.getBuffer().size()); // this is because a new List instance is created
+        assertEquals(0, positronAppender.getBuffer().length());
     }
 
     public void testLevelToLogBuffer() {
@@ -59,7 +57,15 @@ public class PositronAppenderTest extends TestCase {
         positronAppender.activateOptions();
         root.addAppender(positronAppender);
         root.warn("x 1");
-        assertEquals(0, positronAppender.getBuffer().size());
+        assertEquals(0, positronAppender.getBuffer().length());
+    }
+
+    public void testCycling() {
+        final PositronAppender positronAppender = getPositronAppender();
+        positronAppender.setBufferSize(3);
+        positronAppender.activateOptions();
+
+
     }
 
     private PositronAppender getPositronAppender() {
