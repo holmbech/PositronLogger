@@ -1,1 +1,12 @@
-log4j example
+log4j example snippet:
+
+    <appender name="ROLLINGFILE" class="com.holmbech.PositronAppender">
+        <param name="File" value="log4j.txt"/>
+        <param name="Append" value="true"/>
+        <param name="MaxFileSize" value="5MB"/>
+        <param name="MaxBackupIndex" value="5"/>
+        <param name="MinimumLevelToAdd" value="Level.INFO"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c{5} - %m%n"/>
+        </layout>
+    </appender>

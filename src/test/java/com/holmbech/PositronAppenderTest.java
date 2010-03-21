@@ -60,12 +60,23 @@ public class PositronAppenderTest extends TestCase {
         assertEquals(0, positronAppender.getBuffer().length());
     }
 
-    public void testCycling() {
+    public void testCycling() throws Exception {
         final PositronAppender positronAppender = getPositronAppender();
+        root.addAppender(positronAppender);
         positronAppender.setBufferSize(3);
         positronAppender.activateOptions();
 
+        root.debug("1");
+        root.debug("2");
+        root.debug("3");
+        root.debug("4");
+        root.debug("5");
 
+        final CyclicBuffer buffer = positronAppender.getBuffer();
+        assertEquals(3, buffer.length());
+        assertEquals("3", buffer.get().getMessage());
+
+        root.error("6");
     }
 
     private PositronAppender getPositronAppender() {
