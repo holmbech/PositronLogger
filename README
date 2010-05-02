@@ -10,3 +10,26 @@ log4j example snippet:
             <param name="ConversionPattern" value="%d{ISO8601} %-5p %c{5} - %m%n"/>
         </layout>
     </appender>
+
+AppenderAttachable version:
+    <appender name="ROLLINGFILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="log4j.txt" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="5MB" />
+        <param name="MaxBackupIndex" value="5" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c{5} - %m%n" />
+        </layout>
+    </appender>
+            
+    <appender name="POSITRONIC" class="com.holmbech.PluggablePositronAppender">
+        <appender-ref "ROLLINGFILE" />
+        <param name="MaximumLevelToStore" value="Level.WARN" />
+        <param name="BufferSize" value="50" />
+    </appender>
+
+    <root>
+        <level value="DEBUG" />
+        <appender-ref ref="POSITRONIC" />
+    </root>
+
